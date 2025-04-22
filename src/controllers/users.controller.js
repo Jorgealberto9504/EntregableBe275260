@@ -59,3 +59,36 @@ export const loginUser = async (req, res) => {
       user: req.user,
     });
   };
+
+
+export const updateUser = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    if (req.user.role !== 'admin' && req.user.email !== email) {
+      return res.status(403).json({ message: 'Acceso denegado' });
+    }
+
+    const updatedUser = await User.findOneAndUpdate({ email }, req.body, { new: true }).select('-password');
+    if (!updatedUser) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al actualizar usuario', error: error.message });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    if (req.user.role !== 'admin' && req.user.email !== email) {
+      return res.status(403).json({ message: 'Acceso denegado' });
+    }
+
+    await User.findOneAndDelete({ email });
+    res.json({ message: 'Usuario eliminado correctamente' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al eliminar usuario', error: error.message });
+  }
+};
