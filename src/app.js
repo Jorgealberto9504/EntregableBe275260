@@ -5,6 +5,8 @@ import userRoutes from './routes/users.routes.js';
 import passport from 'passport';
 import './config/passport.js';
 import sessionRoutes from './routes/sessions.routes.js';
+import cookieParser from 'cookie-parser';
+
 
 
 
@@ -13,6 +15,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
+app.use(cookieParser());
 app.use(passport.initialize());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

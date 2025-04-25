@@ -1,6 +1,8 @@
 import User from '../models/User.js';
 import { createHash, isValidPassword } from '../utils/hash.js';
-import { generateToken } from '../utils/jwt.js';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 
 
@@ -45,9 +47,16 @@ export const loginUser = async (req, res) => {
       const validPassword = await isValidPassword(password, user.password);
       if (!validPassword) return res.status(401).json({ message: 'Contraseña incorrecta.' });
   
-      const token = generateToken(user);
+      const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+      res.cookie('jwt', token, {
+        httpOnly: true,
+        secure: true,
+        sameSite:"strict",
+        maxAge: 3600000, // 1 hour
+      });
   
-      res.status(200).json({ message: 'Login exitoso.', token });
+      res.status(200).json({ message: 'Login exitoso.', user:{email:user.email}});
     } catch (error) {
       res.status(500).json({ message: 'Error en login.', error: error.message });
     }
