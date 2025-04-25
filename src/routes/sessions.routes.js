@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
 
+
 const router = Router();
 
 // Ruta protegida que devuelve los datos del usuario autenticado
